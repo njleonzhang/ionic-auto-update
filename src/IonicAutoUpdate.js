@@ -149,8 +149,8 @@ angular.module('ionicAutoUpdate', [])
         return defer.promise
       }
 
-      function suggestUpDate() {
-        var defer = $q.defer()
+      function suggestUpDate(defer) {
+        defer = defer || $q.defer()
         // 如果上一次提醒是今天,则不提醒了.
         if (todayHasSuggest()) {
           defer.reject()
@@ -158,7 +158,7 @@ angular.module('ionicAutoUpdate', [])
           NativeAlert.showConfirm('新版本上线啦', '更新提醒', ['去更新', '暂不更新']).then(function(selectedButtonIndex) {
             if (selectedButtonIndex == 1) {
               startUpdateApp().then(function() {
-                $timeout(suggestUpDate, 500)
+                $timeout(angular.bind(null, suggestUpDate, defer), 500)
               }, function() {
                 defer.reject()
               })
