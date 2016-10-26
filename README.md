@@ -10,6 +10,20 @@
 
 `npm run register`
 
+### Install
+
+`bower install ionic-auto-update --save`
+
+### Cordova Plugins
+
+* cordova-plugin-device
+* cordova-plugin-file
+* cordova-plugin-file-transfer
+* cordova-plugin-file-opener2
+* cordova-plugin-pdialog
+* cordova-plugin-dialogs
+* cordova-plugin-inappbrowser
+
 ## Getting To Know Yeoman
 
  * Yeoman has a heart of gold.
