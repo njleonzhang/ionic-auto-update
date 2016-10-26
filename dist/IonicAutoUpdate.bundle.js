@@ -8,10 +8,14 @@
  * Service in the ionicAutoUpdate.
  */
 angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeout", "$cordovaFileTransfer", "$cordovaFileOpener2", "$filter", function ($q, $timeout, $cordovaFileTransfer, $cordovaFileOpener2, $filter) {
+  var platform = window.ionic.Platform.platform();
+  var startUpdateApp = void 0;
+  var updateHandles = void 0;
+
   function showAlert(message, title, buttonName) {
     var defer = $q.defer();
-    if (navigator.notification) {
-      navigator.notification.alert(message, // message
+    if (window.navigator.notification) {
+      window.navigator.notification.alert(message, // message
       function () {
         defer.resolve();
       }, // callback
@@ -24,8 +28,8 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
 
   function showConfirm(message, title, buttonLabels) {
     var defer = $q.defer();
-    if (navigator.notification) {
-      navigator.notification.confirm(message, // message
+    if (window.navigator.notification) {
+      window.navigator.notification.confirm(message, // message
       function (buttonIndex) {
         defer.resolve(buttonIndex);
       }, // callback
@@ -53,7 +57,7 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
   }
 
   function showProgress() {
-    cordova.plugin.pDialog.init({
+    window.cordova.plugin.pDialog.init({
       theme: 'HOLO_DARK',
       progressStyle: 'HORIZONTAL',
       cancelable: false,
@@ -63,11 +67,11 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
   }
 
   function updateProgress(progress) {
-    cordova.plugin.pDialog.setProgress(progress);
+    window.cordova.plugin.pDialog.setProgress(progress);
   }
 
   function hideProgress() {
-    cordova.plugin.pDialog.dismiss();
+    window.cordova.plugin.pDialog.dismiss();
   }
 
   function updateAndroidApp(opts) {
@@ -102,7 +106,7 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
 
   function updateIOSApp(opts) {
     var defer = $q.defer();
-    cordova.InAppBrowser.open(opts.url, '_system');
+    window.cordova.InAppBrowser.open(opts.url, '_system');
     defer.resolve();
     return defer.promise;
   }
@@ -140,15 +144,15 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
       defer.reject();
     } else {
       showConfirm('新版本上线啦', '更新提醒', ['去更新', '暂不更新']).then(function (selectedButtonIndex) {
-        if (selectedButtonIndex == 1) {
+        if (selectedButtonIndex === 1) {
           startUpdateApp().then(function () {
             $timeout(angular.bind(null, suggestUpDate, defer), 500);
           }, function () {
             defer.reject();
           });
-        } else if (selectedButtonIndex == 2) {
+        } else if (selectedButtonIndex === 2) {
           var upgradeSuggestionInfo = {
-            'last_suggest_date': $filter('date')(new Date(), 'yyyy-MM-dd')
+            last_suggest_date: $filter('date')(new Date(), 'yyyy-MM-dd')
           };
           console.log(upgradeSuggestionInfo);
           setJsonObj('upgradeSuggestionInfo', upgradeSuggestionInfo);
@@ -161,22 +165,17 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
     return defer.promise;
   }
 
-  var platform = ionic.Platform.platform();
-  var startUpdateApp;
-  var updateHandles;
-
   this.init = function (_ref) {
     var _ref$iOSDownloadUrl = _ref.iOSDownloadUrl,
         iOSDownloadUrl = _ref$iOSDownloadUrl === undefined ? '' : _ref$iOSDownloadUrl,
         _ref$androidDownloadU = _ref.androidDownloadUrl,
         androidDownloadUrl = _ref$androidDownloadU === undefined ? '' : _ref$androidDownloadU,
         _ref$path = _ref.path,
-        path = _ref$path === undefined ? cordova.file.externalApplicationStorageDirectory : _ref$path,
+        path = _ref$path === undefined ? window.cordova.file.externalApplicationStorageDirectory : _ref$path,
         _ref$filename = _ref.filename,
         filename = _ref$filename === undefined ? 'new_version.apk' : _ref$filename,
         _ref$downloadSuccessC = _ref.downloadSuccessCb,
         downloadSuccessCb = _ref$downloadSuccessC === undefined ? function () {} : _ref$downloadSuccessC;
-
 
     var options = {
       ios: {
@@ -192,7 +191,6 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
 
     if (!options.url) {
       throw new Error('undefined url');
-      return;
     }
 
     startUpdateApp = {
@@ -217,7 +215,6 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
   this.start = function (updateType) {
     if (!startUpdateApp || !updateHandles) {
       throw new Error('AppUpdate not init');
-      return;
     }
     return updateHandles[updateType].call();
   };

@@ -7,7 +7,8 @@ module.exports = {
   extends: 'airbnb-base',
   'globals': {
     '$': true,
-    'angular': true
+    'angular': true,
+    'window': true
   },
   // add your custom rules here
   'rules': {
