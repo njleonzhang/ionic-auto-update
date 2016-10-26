@@ -27,6 +27,6 @@
   "scripts": {
     "gulp": "./node_modules/.bin/gulp",
     "build": "gulp",
-    "register": "bower register ionic-auto-update https://github.com/***/**.git"
+    "register": "bower register ionic-auto-update https://github.com/njleonzhang/ionic-auto-update.git"
   }
 }
