@@ -1,0 +1,5 @@
+{
+  "name": "IonicAutoUpdate",
+  "author": "yehan <storkyeh@gmail.com>",
+  "main": "dist/IonicAutoUpdate.bundle.min.js"
+}
