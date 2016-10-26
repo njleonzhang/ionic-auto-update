@@ -7,8 +7,8 @@
  * # IonicAutoUpdate
  * Service in the ionicAutoUpdate.
  */
-angular.module('ionicAutoUpdate', []).service('NativeAlert', ["$q", function ($q) {
-  this.showAlert = function (message, title, buttonName) {
+angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeout", "$cordovaFileTransfer", "$cordovaFileOpener2", "$filter", function ($q, $timeout, $cordovaFileTransfer, $cordovaFileOpener2, $filter) {
+  function showAlert(message, title, buttonName) {
     var defer = $q.defer();
     if (navigator.notification) {
       navigator.notification.alert(message, // message
@@ -20,9 +20,9 @@ angular.module('ionicAutoUpdate', []).service('NativeAlert', ["$q", function ($q
       );
     }
     return defer.promise;
-  };
+  }
 
-  this.showConfirm = function (message, title, buttonLabels) {
+  function showConfirm(message, title, buttonLabels) {
     var defer = $q.defer();
     if (navigator.notification) {
       navigator.notification.confirm(message, // message
@@ -34,28 +34,16 @@ angular.module('ionicAutoUpdate', []).service('NativeAlert', ["$q", function ($q
       );
     }
     return defer.promise;
-  };
-}]).service('BSYLocalStorage', function () {
-  this.setStr = function (key, val) {
-    window.localStorage[key] = val;
-  };
+  }
 
-  this.getStr = function (key) {
-    return window.localStorage[key] || '';
-  };
-
-  this.setJsonObj = function (key, obj) {
+  function setJsonObj(key, obj) {
     window.localStorage[key] = JSON.stringify(obj);
-  };
+  }
 
-  this.getJsonObj = function (key) {
+  function getJsonObj(key) {
     return JSON.parse(window.localStorage[key] || '{}');
-  };
+  }
 
-  this.remove = function (key) {
-    window.localStorage.removeItem(key);
-  };
-}).service('IonicAutoUpdate', ["$q", "$timeout", "$cordovaFileTransfer", "$cordovaFileOpener2", "BSYLocalStorage", "$filter", "NativeAlert", function ($q, $timeout, $cordovaFileTransfer, $cordovaFileOpener2, BSYLocalStorage, $filter, NativeAlert) {
   function downloadApk(url, targetPath) {
     return $cordovaFileTransfer.download(url, targetPath, {}, true);
   }
@@ -125,7 +113,7 @@ angular.module('ionicAutoUpdate', []).service('NativeAlert', ["$q", function ($q
   }
 
   function todayHasSuggest() {
-    var upgradeSuggestionInfo = BSYLocalStorage.getJsonObj('upgradeSuggestionInfo');
+    var upgradeSuggestionInfo = getJsonObj('upgradeSuggestionInfo');
     if (upgradeSuggestionInfo && isToday(new Date(upgradeSuggestionInfo.last_suggest_date))) {
       return true;
     }
@@ -134,7 +122,7 @@ angular.module('ionicAutoUpdate', []).service('NativeAlert', ["$q", function ($q
 
   function forceUpDate() {
     var defer = $q.defer();
-    NativeAlert.showAlert('在使用前您必须更新!', '更新提醒', '去更新').then(function () {
+    showAlert('在使用前您必须更新!', '更新提醒', '去更新').then(function () {
       startUpdateApp().then(function () {
         defer.resolve();
         $timeout(forceUpDate, 500);
@@ -151,7 +139,7 @@ angular.module('ionicAutoUpdate', []).service('NativeAlert', ["$q", function ($q
     if (todayHasSuggest()) {
       defer.reject();
     } else {
-      NativeAlert.showConfirm('新版本上线啦', '更新提醒', ['去更新', '暂不更新']).then(function (selectedButtonIndex) {
+      showConfirm('新版本上线啦', '更新提醒', ['去更新', '暂不更新']).then(function (selectedButtonIndex) {
         if (selectedButtonIndex == 1) {
           startUpdateApp().then(function () {
             $timeout(angular.bind(null, suggestUpDate, defer), 500);
@@ -163,7 +151,7 @@ angular.module('ionicAutoUpdate', []).service('NativeAlert', ["$q", function ($q
             'last_suggest_date': $filter('date')(new Date(), 'yyyy-MM-dd')
           };
           console.log(upgradeSuggestionInfo);
-          BSYLocalStorage.setJsonObj('upgradeSuggestionInfo', upgradeSuggestionInfo);
+          setJsonObj('upgradeSuggestionInfo', upgradeSuggestionInfo);
           defer.reject();
         } else {
           defer.reject();
