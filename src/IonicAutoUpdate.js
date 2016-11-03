@@ -10,6 +10,7 @@ angular.module('ionicAutoUpdate', [])
     let platform = window.ionic.Platform.platform()
     let startUpdateApp
     let updateHandles
+    let _alertContent
 
     function showAlert(message, title, buttonName) {
       let defer = $q.defer()
@@ -128,7 +129,7 @@ angular.module('ionicAutoUpdate', [])
 
     function forceUpDate() {
       let defer = $q.defer()
-      showAlert('在使用前您必须更新!', '更新提醒', '去更新').then(function() {
+      showAlert(_alertContent, '更新提醒', '去更新').then(function() {
         startUpdateApp().then(function() {
           defer.resolve()
           $timeout(forceUpDate, 500)
@@ -172,7 +173,8 @@ angular.module('ionicAutoUpdate', [])
       androidDownloadUrl = '',
       path = window.cordova.file.externalApplicationStorageDirectory,
       filename = 'new_version.apk',
-      downloadSuccessCb = function() {}
+      downloadSuccessCb = function() {},
+      alertContent = '在使用前您必须更新!'
     }) {
       let options = {
         ios: {
@@ -207,6 +209,8 @@ angular.module('ionicAutoUpdate', [])
           return suggestUpDate()
         }
       }
+
+      _alertContent = alertContent
     }
 
     this.start = function(updateType) {

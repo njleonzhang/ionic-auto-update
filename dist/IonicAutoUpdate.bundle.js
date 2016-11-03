@@ -11,6 +11,7 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
   var platform = window.ionic.Platform.platform();
   var startUpdateApp = void 0;
   var updateHandles = void 0;
+  var _alertContent = void 0;
 
   function showAlert(message, title, buttonName) {
     var defer = $q.defer();
@@ -126,7 +127,7 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
 
   function forceUpDate() {
     var defer = $q.defer();
-    showAlert('在使用前您必须更新!', '更新提醒', '去更新').then(function () {
+    showAlert(_alertContent, '更新提醒', '去更新').then(function () {
       startUpdateApp().then(function () {
         defer.resolve();
         $timeout(forceUpDate, 500);
@@ -175,7 +176,9 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
         _ref$filename = _ref.filename,
         filename = _ref$filename === undefined ? 'new_version.apk' : _ref$filename,
         _ref$downloadSuccessC = _ref.downloadSuccessCb,
-        downloadSuccessCb = _ref$downloadSuccessC === undefined ? function () {} : _ref$downloadSuccessC;
+        downloadSuccessCb = _ref$downloadSuccessC === undefined ? function () {} : _ref$downloadSuccessC,
+        _ref$alertContent = _ref.alertContent,
+        alertContent = _ref$alertContent === undefined ? '在使用前您必须更新!' : _ref$alertContent;
 
     var options = {
       ios: {
@@ -210,6 +213,8 @@ angular.module('ionicAutoUpdate', []).service('IonicAutoUpdate', ["$q", "$timeou
         return suggestUpDate();
       }
     };
+
+    _alertContent = alertContent;
   };
 
   this.start = function (updateType) {
